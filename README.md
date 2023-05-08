@@ -1,4 +1,4 @@
-# Pipeline Status App
+# GitLab Build Monitor View
 This app is a simple web application that connects to a GitLab instance and displays the status of pipelines.
 
 ![Preview](pipelines.png)
