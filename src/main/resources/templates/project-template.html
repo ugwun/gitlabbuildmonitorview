@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.min.css}"/>
+        <script th:src="@{/webjars/jquery/3.6.3/dist/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/1.16.1/dist/umd/popper.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.min.js}"></script>
+
+        <title>Gitlab Build Monitor View</title>
+        <style>
+            body {
+                background-color: #1c1c1c;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div id="refreshDiv"></div>
+            <div class="row">
+                <p th:if="${pipelines==null}">
+                    <script>
+                        alert("No data about pipelines,\nRefresh the page and try again")
+                    </script>
+                </p>
+            </div>
+        </div>
+        <hr class="text-white">
+        <div class="container">
+            <h4 class="text-white mt-3">Pipelines</h4>
+            <div class="row">
+                <div class="col-sm-6 col-md-4" th:each="pipeline : ${pipelines}">
+                    <div class="card" th:class="${pipeline.status} ? 'card m-2 bg-success rounded-lg' : 'card m-2 bg-danger rounded-lg'">
+                        <div th:class="${pipeline.running} ? 'card m-0 bg-primary rounded-lg' : ''">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${pipeline.name}"></h5>
+                                <a class="card-link" th:if="${pipeline.running==False}" th:href="${pipeline.url}" th:text="${pipeline.name}"></a>
+                                <a class="card-link text-white" th:if="${pipeline.running==True}" th:href="${pipeline.url}" th:text="${pipeline.name}"></a>
+                                <p class="card-text" th:if="${pipeline.running==False}" th:text="${pipeline.status} ? 'Success' : 'Failed'"></p>
+                                <p class="card-text" th:if="${pipeline.running==True}" th:text="'pipeline -> running'"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+    const refreshDiv = document.getElementById('refreshDiv');
+
+    async function makeRequest() {
+        try {
+            const response = await fetch('/reloadState');
+            if (response.status !== 202) {
+                let seconds = 3;
+                const countdownTimer = setInterval(() => {
+                    refreshDiv.innerHTML = `<p class='text-center bg-info'>New data available. Refresh page for ${seconds} seconds</p>`;
+                    seconds--;
+                    if (seconds < 0) {
+                        clearInterval(countdownTimer);
+                        refreshDiv.innerHTML = "<p class='text-center bg-info'>Refreshing...</p>";
+                        setTimeout(() => {
+                            location.reload();
+                        }, 500);
+                    }
+                }, 1000);
+            }
+            setTimeout(makeRequest, 6000);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    makeRequest();
+</script>

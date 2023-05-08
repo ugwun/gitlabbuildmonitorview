@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlabbuildmonitorview
+spec:
+  selector:
+    matchLabels:
+      app: gitlabbuildmonitorview
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gitlabbuildmonitorview
+    spec:
+      containers:
+        - name: gitlabbuildmonitorview
+          image: your_image_repository.com/gitlabbuildmonitorview:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8101
+      imagePullSecrets:
+        - name: your_image_pull_secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitlabbuildmonitorview
+spec:
+  type: ClusterIP
+  selector:
+    app: gitlabbuildmonitorview
+  ports:
+    - name: http
+      port: 8101
+      targetPort: 8101
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gitlabbuildmonitorview
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/secure-backends: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  rules:
+    - host: yourhost.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gitlabbuildmonitorview
+                port:
+                  name: http
