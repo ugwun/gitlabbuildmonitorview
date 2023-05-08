@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
 class GitlabBuildMonitorViewApplication {
     @Bean
     fun gitLabApi(gitlabBuildMonitorViewProperties: GitlabBuildMonitorViewProperties): GitLabApi {
-        val gitLabApi = GitLabApi("https://gitlab.devops.telekom.de", gitlabBuildMonitorViewProperties.personalAccessToken)
+        val gitLabApi = GitLabApi(gitlabBuildMonitorViewProperties.host, gitlabBuildMonitorViewProperties.personalAccessToken)
         gitLabApi.setRequestTimeout(10_000, 10_000);
         return gitLabApi
     }
@@ -32,6 +32,7 @@ class GitlabBuildMonitorViewApplication {
 
 @ConfigurationProperties(prefix = "gitlabbuildmonitorview")
 class GitlabBuildMonitorViewProperties {
+    lateinit var host: String
     lateinit var personalAccessToken: String
     lateinit var projects: List<String>
 }
