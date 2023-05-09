@@ -23,6 +23,14 @@ You can click on the pipeline name to navigate to the pipeline's page in GitLab.
     - The token must have the _api_ scope or _read_api_ scope.
 - Open your browser and navigate to http://localhost:8101
 
+### Build a Docker image
+Run ./gradlew bootBuildImage in the root directory.
+
+### Environment variables:
+GITLABBUILDMONITORVIEW_HOST=https://gitlab.com  
+GITLABBUILDMONITORVIEW_PERSONAL_ACCESS_TOKEN=  
+GITLABBUILDMONITORVIEW_PROJECTS=group/subgroup/project1,group/subgroup/project2  
+
 ### Limitations
 Current limitation is that the app may have slow response time when connecting to GitLab due to network latency or
 high traffic on the GitLab instance.
